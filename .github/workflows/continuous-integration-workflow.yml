@@ -28,6 +28,7 @@ jobs:
           registry-url: https://npm.pkg.github.com/
           scope: '@solarconnect'
       - run: yarn install
+      - run: yarn build
       - run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}

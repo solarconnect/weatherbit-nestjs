@@ -1,6 +1,6 @@
 {
   "name": "@solarconnect/weatherbit-nestjs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Github Packages npm template for NestJS modules",
   "contributors": [
     "Yobi <ordinary.yobi@gmail.com> (https://yobi.dev)"
