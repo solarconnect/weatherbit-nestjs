@@ -1,4 +1,4 @@
-![Build package](https://github.com/ordinary-yobi/weatherbit-nestjs/workflows/Build%20package/badge.svg?branch=master)
+![Build package](https://github.com/solarconnect/weatherbit-nestjs/workflows/Build%20package/badge.svg?branch=master)
 
 # Introduction
 

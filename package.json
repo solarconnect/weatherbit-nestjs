@@ -1,5 +1,5 @@
 {
-  "name": "@ordinary-yobi/weatherbit-nestjs",
+  "name": "@solarconnect/weatherbit-nestjs",
   "version": "0.0.1",
   "description": "Github Packages npm template for NestJS modules",
   "contributors": [
@@ -31,9 +31,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:ordinary-yobi/weatherbit-nestjs.git"
+    "url": "git@github.com:solarconnect/weatherbit-nestjs.git"
   },
-  "bugs": "https://github.com/ordinary-yobi/weatherbit-nestjs.git",
+  "bugs": "https://github.com/solarconnect/weatherbit-nestjs.git",
   "dependencies": {
     "@nestjs/common": "^7.6.12",
     "@nestjs/core": "^7.6.12",
