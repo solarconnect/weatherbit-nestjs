@@ -292,4 +292,17 @@ export enum WeatherbitUnit {
 /**
  *
  */
-export abstract class WeatherbitException extends Error {}
+export abstract class WeatherbitException extends Error {
+}
+
+// TODO 실제 쓰는값으로 설정
+export interface Test {
+  datetime: string;
+  temperature: number;
+
+}
+
+export interface WeatherbitCurrentDataForSC {
+  original: WeatherbitCurrentResponse;
+  sc: Test;
+}

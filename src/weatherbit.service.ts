@@ -1,13 +1,14 @@
 import { HttpService, Inject, Injectable, Logger } from '@nestjs/common';
+import * as dayjs from 'dayjs';
+import * as timezone from 'dayjs/plugin/timezone';
+import * as utc from 'dayjs/plugin/utc';
 import { WEATHERBIT_MODULE_CONFIG } from './constants';
-import {
-  WeatherbitContext,
-  WeatherbitCurrentResponse,
-  WeatherbitException,
-  WeatherbitLanguage,
-  WeatherbitUnit,
-} from './weatherbit.interface';
+import { WeatherbitContext, WeatherbitCurrentResponse, WeatherbitException, WeatherbitLanguage, WeatherbitUnit } from './weatherbit.interface';
 import { WeatherbitModuleConfig } from './weatherbit.module';
+
+// TODO fixme
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 /**
  * Documentation https://www.weatherbit.io/api/weather-current
@@ -25,12 +26,12 @@ export class WeatherbitService {
 
   constructor(
     @Inject(WEATHERBIT_MODULE_CONFIG)
-    {
-      apiKey,
-      useHttps = false,
-      lang = WeatherbitLanguage.en,
-      unit = WeatherbitUnit.Metric,
-    }: WeatherbitModuleConfig,
+      {
+        apiKey,
+        useHttps = false,
+        lang = WeatherbitLanguage.en,
+        unit = WeatherbitUnit.Metric,
+      }: WeatherbitModuleConfig,
     private readonly httpService: HttpService,
   ) {
     this.API_KEY = apiKey;
@@ -54,6 +55,7 @@ export class WeatherbitService {
 
   /**
    * 좌표로 현재 날씨를 조회합니다.
+   * 문서에서 찾을 수 없었지만, timezone 항목이 UTC 가 아니어도 응답에 포함되어있는 날짜, 시간 값은 항상 UTC 로 추정됩니다.
    * https://api.weatherbit.io/v2.0/current?lat=35.7796&lon=-78.6382&key=API_KEY&include=minutely
    * Current milliseconds
    * @param latitude
@@ -93,6 +95,55 @@ export class WeatherbitService {
       }
       throw new Error('UnhandledError');
     }
+  }
+
+  /**
+   *
+   * @param latitude
+   * @param longitude
+   */
+  async nowByCoordinatesForSC(
+    latitude: number,
+    longitude: number,
+  ): Promise<void> {
+
+    const response = await this.nowByCoordinates(latitude, longitude);
+
+    // TODO result to WeatherbitCurrentDataForSC
+
+    if (response.count < 0) {
+      throw new Error('EmptyResult');
+    }
+
+    const result = response.data.map((d) => {
+
+      const datetime = dayjs.utc(d.datetime, 'YYYY-MM-DD HH');
+
+      const sunrise = dayjs.tz(dayjs.utc(`${datetime.format('YYYY-MM-DD')} ${d.sunrise}`), 'Asia/Seoul');
+      const sunset = dayjs.tz(dayjs.utc(`${datetime.format('YYYY-MM-DD')} ${d.sunset}`), 'Asia/Seoul');
+
+      const now = dayjs();
+
+      console.log(`sunrise: ${sunrise.hour()}, ${sunrise.minute()}, sunset: ${sunset.hour()}, ${sunset.minute()}, now: ${now.format()}`);
+
+      const a = now.set('hour', sunrise.hour()).set('minutes', sunrise.minute());
+      const b = now.set('hour', sunset.hour()).set('minutes', sunset.minute());
+
+      console.log(`a: ${a.format()}, b: ${b.format()}`);
+
+      if (now.isAfter(a) && now.isBefore(b)) { // 주간
+        const icon = d.weather.icon.replace(/n/ig, 'd');
+        console.log(icon);
+      } else { // 야간
+        const icon = d.weather.icon.replace(/d/ig, 'n');
+        console.log(icon);
+      }
+
+
+    });
+
+
+    // TODO return;
   }
 
   /**
