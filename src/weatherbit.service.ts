@@ -3,7 +3,14 @@ import * as dayjs from 'dayjs';
 import * as timezone from 'dayjs/plugin/timezone';
 import * as utc from 'dayjs/plugin/utc';
 import { WEATHERBIT_MODULE_CONFIG } from './constants';
-import { WeatherbitContext, WeatherbitCurrentResponse, WeatherbitException, WeatherbitLanguage, WeatherbitUnit } from './weatherbit.interface';
+import {
+  WeatherbitContext,
+  WeatherbitCurrentDataForSC,
+  WeatherbitCurrentResponse,
+  WeatherbitException,
+  WeatherbitLanguage,
+  WeatherbitUnit,
+} from './weatherbit.interface';
 import { WeatherbitModuleConfig } from './weatherbit.module';
 
 // TODO fixme
@@ -26,12 +33,7 @@ export class WeatherbitService {
 
   constructor(
     @Inject(WEATHERBIT_MODULE_CONFIG)
-      {
-        apiKey,
-        useHttps = false,
-        lang = WeatherbitLanguage.en,
-        unit = WeatherbitUnit.Metric,
-      }: WeatherbitModuleConfig,
+    { apiKey, useHttps = false, lang = WeatherbitLanguage.en, unit = WeatherbitUnit.Metric }: WeatherbitModuleConfig,
     private readonly httpService: HttpService,
   ) {
     this.API_KEY = apiKey;
@@ -61,10 +63,7 @@ export class WeatherbitService {
    * @param latitude
    * @param longitude
    */
-  async nowByCoordinates(
-    latitude: number,
-    longitude: number,
-  ): Promise<WeatherbitCurrentResponse> {
+  async nowByCoordinates(latitude: number, longitude: number): Promise<WeatherbitCurrentResponse> {
     const apiUrl = this.makeUrl(WeatherbitContext.CURRENT);
 
     try {
@@ -81,11 +80,7 @@ export class WeatherbitService {
 
       // TODO 필요 시 WeatherbitException 을 생성합니다.
 
-      this.logger.debug(
-        `status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(
-          data,
-        )}`,
-      );
+      this.logger.debug(`status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(data)}`);
 
       return data;
     } catch (e) {
@@ -102,11 +97,7 @@ export class WeatherbitService {
    * @param latitude
    * @param longitude
    */
-  async nowByCoordinatesForSC(
-    latitude: number,
-    longitude: number,
-  ): Promise<void> {
-
+  async nowByCoordinatesForSC(latitude: number, longitude: number): Promise<WeatherbitCurrentDataForSC> {
     const response = await this.nowByCoordinates(latitude, longitude);
 
     // TODO result to WeatherbitCurrentDataForSC
@@ -115,35 +106,40 @@ export class WeatherbitService {
       throw new Error('EmptyResult');
     }
 
-    const result = response.data.map((d) => {
+    const data = response.data[0];
 
-      const datetime = dayjs.utc(d.datetime, 'YYYY-MM-DD HH');
+    const now = dayjs().tz('Asia/Seoul');
 
-      const sunrise = dayjs.tz(dayjs.utc(`${datetime.format('YYYY-MM-DD')} ${d.sunrise}`), 'Asia/Seoul');
-      const sunset = dayjs.tz(dayjs.utc(`${datetime.format('YYYY-MM-DD')} ${d.sunset}`), 'Asia/Seoul');
+    const datetime = dayjs.utc(data.datetime, 'YYYY-MM-DD HH');
+    const _sunrise = dayjs.tz(dayjs.utc(`${datetime.format('YYYY-MM-DD')} ${data.sunrise}`), 'Asia/Seoul');
+    const _sunset = dayjs.tz(dayjs.utc(`${datetime.format('YYYY-MM-DD')} ${data.sunset}`), 'Asia/Seoul');
 
-      const now = dayjs();
+    const sunrise = now.set('hour', _sunrise.hour()).set('minutes', _sunrise.minute());
+    const sunset = now.set('hour', _sunset.hour()).set('minutes', _sunset.minute());
 
-      console.log(`sunrise: ${sunrise.hour()}, ${sunrise.minute()}, sunset: ${sunset.hour()}, ${sunset.minute()}, now: ${now.format()}`);
+    // icon 이 주간/야간 여부에 상관없이 조회되는 경우가 있어서 이를 보정합니다.
+    let icon: string;
+    if (now.isAfter(sunrise) && now.isBefore(sunset)) {
+      // 주간
+      icon = data.weather.icon.replace(/n/gi, 'd');
+    } else {
+      // 야간
+      icon = data.weather.icon.replace(/d/gi, 'n');
+    }
 
-      const a = now.set('hour', sunrise.hour()).set('minutes', sunrise.minute());
-      const b = now.set('hour', sunset.hour()).set('minutes', sunset.minute());
-
-      console.log(`a: ${a.format()}, b: ${b.format()}`);
-
-      if (now.isAfter(a) && now.isBefore(b)) { // 주간
-        const icon = d.weather.icon.replace(/n/ig, 'd');
-        console.log(icon);
-      } else { // 야간
-        const icon = d.weather.icon.replace(/d/ig, 'n');
-        console.log(icon);
-      }
-
-
-    });
-
-
-    // TODO return;
+    return {
+      original: response,
+      sc: {
+        weather: {
+          icon,
+          code: data.weather.code,
+          description: data.weather.description,
+        },
+        sunrise: sunrise.format(),
+        sunset: sunset.format(),
+        temperature: data.temp,
+      },
+    };
   }
 
   /**
@@ -154,11 +150,7 @@ export class WeatherbitService {
    * @param state
    * @param country
    */
-  async nowByCityName(
-    city: string,
-    state?: string,
-    country?: string,
-  ): Promise<WeatherbitCurrentResponse> {
+  async nowByCityName(city: string, state?: string, country?: string): Promise<WeatherbitCurrentResponse> {
     const apiUrl = this.makeUrl(WeatherbitContext.CURRENT);
 
     // TODO state, country 처리
@@ -175,11 +167,7 @@ export class WeatherbitService {
 
       // TODO 필요 시 WeatherbitException 을 생성합니다.
 
-      this.logger.debug(
-        `status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(
-          data,
-        )}`,
-      );
+      this.logger.debug(`status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(data)}`);
 
       return data;
     } catch (e) {
@@ -198,10 +186,7 @@ export class WeatherbitService {
    * @param postalCode
    * @param country
    */
-  async nowByPostalCode(
-    postalCode: string,
-    country?: string,
-  ): Promise<WeatherbitCurrentResponse> {
+  async nowByPostalCode(postalCode: string, country?: string): Promise<WeatherbitCurrentResponse> {
     const apiUrl = this.makeUrl(WeatherbitContext.CURRENT);
 
     // TODO country 처리
@@ -218,11 +203,7 @@ export class WeatherbitService {
 
       // TODO 필요 시 WeatherbitException 을 생성합니다.
 
-      this.logger.debug(
-        `status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(
-          data,
-        )}`,
-      );
+      this.logger.debug(`status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(data)}`);
 
       return data;
     } catch (e) {
@@ -257,11 +238,7 @@ export class WeatherbitService {
 
       // TODO 필요 시 WeatherbitException 을 생성합니다.
 
-      this.logger.debug(
-        `status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(
-          data,
-        )}`,
-      );
+      this.logger.debug(`status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(data)}`);
 
       return data;
     } catch (e) {

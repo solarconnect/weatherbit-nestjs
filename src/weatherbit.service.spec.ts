@@ -39,4 +39,9 @@ describe('WeatherbitService', () => {
     expect(Array.isArray(result.data)).toBeTruthy();
     expect(result.data.length).toBeGreaterThan(0);
   });
+
+  it('nowByCoordinatesForSC', async () => {
+    const result = await service.nowByCoordinatesForSC(36, 127);
+    console.log(JSON.stringify(result.sc));
+  });
 });
