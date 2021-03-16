@@ -2,6 +2,8 @@
  * Weatherbit 의 서비스 컨텍스트
  *
  */
+import { Dayjs } from 'dayjs';
+
 export enum WeatherbitContext {
   // 현재날씨
   CURRENT = 'current',
@@ -293,3 +295,15 @@ export enum WeatherbitUnit {
  *
  */
 export abstract class WeatherbitException extends Error {}
+
+export interface WeatherForSC {
+  weather: WeatherbitCurrentWeather;
+  temperature: number;
+  sunrise: string;
+  sunset: string;
+}
+
+export interface WeatherbitCurrentDataForSC {
+  original: WeatherbitCurrentResponse;
+  sc: WeatherForSC;
+}

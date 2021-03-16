@@ -12,7 +12,7 @@ NestJS module 중 재사용이 필요한 npm package 로 작성하고 publish �
 
 https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-npm-for-use-with-github-packages
 
-https://github.community/t/download-from-github-package-registry-without-authentication/14407  
+https://github.community/t/download-from-github-package-registry-without-authentication/14407
 
 ## Configuration
 
@@ -34,8 +34,16 @@ https://github.community/t/download-from-github-package-registry-without-authent
 
 module 을 개발하는 빙법입니다.
 
+## Configuration
+
+`.env` 파일을 project root 에 생성해주세요.
+
+|  Name | Type  | Required |
+|:---:|:---:|:---:|
+| API_KEY  |  string  | Yes  |
+
 ## Create a module
- 
+
 module 을 생성할 때 는 `nest cli` 를 사용합니다.
 
 ```shell script
@@ -46,10 +54,9 @@ nest g mo sample --flat
 
 그 외 `service` 등 필요한 기능을 작성하고, `module` 에 import 합니다.
 
+## Test
 
-## Test the module
-
-sample 을 참고하여 테스트 코드를 작성하고, 예외처리를 해주세요.
+[Sample test code](src/weatherbit.service.spec.ts) 을 참고하여 test case 를 작성해주세요.
 
 # Build
 
@@ -63,7 +70,6 @@ module 의 시작점은 `index.js`, `index.d.ts` 입니다.
 
 자세한 내용은 `package.json` 을 참조하세요.
 
-
 ```shell script
 yarn publish
 ```
@@ -72,7 +78,8 @@ yarn publish
 
 public package 의 경우 지울 수 없습니다.
 
-https://docs.github.com/en/packages/publishing-and-managing-packages/deleting-a-package#:~:text=Deleting%20a%20version%20of%20a%20private%20package%20on%20GitHub,-To%20delete%20a&text=To%20the%20right%20of%20the,want%20to%20delete%2C%20click%20Delete.
+https://docs.github.com/en/packages/publishing-and-managing-packages/deleting-a-package#:~:text=Deleting%20a%20version%20of%20a%20private%20package%20on%20GitHub,-To%20delete%20a&text=To%20the%20right%20of%20the,want%20to%20delete%2C%20click%20Delete
+.
 
 # CI/CD
 

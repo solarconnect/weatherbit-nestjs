@@ -1,3 +1,4 @@
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { WeatherbitModule } from './weatherbit.module';
 import { WeatherbitService } from './weatherbit.service';
@@ -8,8 +9,15 @@ describe('WeatherbitService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        WeatherbitModule.register({
-          apiKey: '',
+        WeatherbitModule.registerAsync({
+          imports: [ConfigModule.forRoot()],
+          inject: [ConfigService],
+          useFactory: (configService: ConfigService) => {
+            const apiKey = configService.get<string>('API_KEY');
+            return {
+              apiKey,
+            };
+          },
         }),
       ],
     }).compile();
@@ -30,5 +38,10 @@ describe('WeatherbitService', () => {
     expect(result).toHaveProperty('data');
     expect(Array.isArray(result.data)).toBeTruthy();
     expect(result.data.length).toBeGreaterThan(0);
+  });
+
+  it('nowByCoordinatesForSC', async () => {
+    const result = await service.nowByCoordinatesForSC(36, 127);
+    console.log(JSON.stringify(result.sc));
   });
 });
