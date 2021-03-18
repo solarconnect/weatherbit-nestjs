@@ -106,7 +106,7 @@ export class WeatherbitService {
       const response = await this.nowByCoordinates(latitude, longitude);
 
       if (response.count < 0) {
-        throw new Error('EmptyResult');
+        throw new EmptyResultException();
       }
 
       const data = response.data[0];
@@ -274,7 +274,6 @@ export class WeatherbitService {
     days: number,
   ): Promise<WeatherbitForecastResponse> {
     const apiUrl = this.makeUrl(WeatherbitContext.FORECAST_DAILY);
-    this.logger.debug(apiUrl);
 
     try {
       const response = await this.httpService
