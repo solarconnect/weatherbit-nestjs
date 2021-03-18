@@ -6,7 +6,7 @@ import { WeatherbitService } from './weatherbit.service';
 describe('WeatherbitService', () => {
   let service: WeatherbitService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         WeatherbitModule.registerAsync({
@@ -42,6 +42,21 @@ describe('WeatherbitService', () => {
 
   it('nowByCoordinatesForSC', async () => {
     const result = await service.nowByCoordinatesForSC(36, 127);
-    console.log(JSON.stringify(result.sc));
+    expect(result).toHaveProperty('sc');
+    // console.log(JSON.stringify(result.sc));
   });
+
+  it('forecastDailyByCoordinates', async () => {
+    const result = await service.forecastDailyByCoordinates(36, 127, 1);
+    expect(result).toHaveProperty('data');
+    expect(result).toHaveProperty('lon');
+    expect(result).toHaveProperty('lat');
+    // console.log(result);
+  });
+
+  it('forecastDailyByCoordinatesForSC', async () => {
+    const result = await service.forecastDailyByCoordinatesForSC(36, 127);
+    console.log(result);
+  });
+
 });
