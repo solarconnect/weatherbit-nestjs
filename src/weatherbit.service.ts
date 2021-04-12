@@ -15,6 +15,7 @@ import {
   WeatherbitUnit,
 } from './weatherbit.interface';
 import { WeatherbitModuleConfig } from './weatherbit.module';
+import { WeatherbitDescriptionForKorea } from './weatherbit.model';
 
 // TODO fixme
 dayjs.extend(utc);
@@ -84,6 +85,11 @@ export class WeatherbitService {
       // TODO 필요 시 WeatherbitException 을 생성합니다.
 
       this.logger.debug(`status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(data)}`);
+
+      // kr 요청의 경우 Weather.description 재정의
+      if (this.config.lang === WeatherbitLanguage.kr) {
+        data.data?.map((datum) => (datum.weather.description = WeatherbitDescriptionForKorea[datum.weather.code]));
+      }
 
       return data;
     } catch (e) {
@@ -179,6 +185,11 @@ export class WeatherbitService {
 
       this.logger.debug(`status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(data)}`);
 
+      // kr 요청의 경우 Weather.description 재정의
+      if (this.config.lang === WeatherbitLanguage.kr) {
+        data.data?.map((datum) => (datum.weather.description = WeatherbitDescriptionForKorea[datum.weather.code]));
+      }
+
       return data;
     } catch (e) {
       this.logger.error(e);
@@ -215,6 +226,11 @@ export class WeatherbitService {
 
       this.logger.debug(`status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(data)}`);
 
+      // kr 요청의 경우 Weather.description 재정의
+      if (this.config.lang === WeatherbitLanguage.kr) {
+        data.data?.map((datum) => (datum.weather.description = WeatherbitDescriptionForKorea[datum.weather.code]));
+      }
+
       return data;
     } catch (e) {
       this.logger.error(e);
@@ -249,6 +265,11 @@ export class WeatherbitService {
       // TODO 필요 시 WeatherbitException 을 생성합니다.
 
       this.logger.debug(`status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(data)}`);
+
+      // kr 요청의 경우 Weather.description 재정의
+      if (this.config.lang === WeatherbitLanguage.kr) {
+        data.data?.map((datum) => (datum.weather.description = WeatherbitDescriptionForKorea[datum.weather.code]));
+      }
 
       return data;
     } catch (e) {
@@ -291,6 +312,11 @@ export class WeatherbitService {
       // TODO 필요 시 WeatherbitException 을 생성합니다.
 
       this.logger.debug(`status: ${status}, statusText: ${statusText}, data: ${JSON.stringify(data)}`);
+
+      // kr 요청의 경우 Weather.description 재정의
+      if (this.config.lang === WeatherbitLanguage.kr) {
+        data.data?.map((datum) => (datum.weather.description = WeatherbitDescriptionForKorea[datum.weather.code]));
+      }
 
       return data;
     } catch (e) {
