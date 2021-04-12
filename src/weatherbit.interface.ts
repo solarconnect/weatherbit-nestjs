@@ -356,6 +356,7 @@ export enum WeatherbitLanguage {
   'uk' = 'uk', // uk - Ukrainian
   'zh' = 'zh', // zh - Chinese (Simplified)
   'zh-tw' = 'zh-tw', // zh-tw - Chinese (Traditional)
+  'kr' = 'kr', // kr - Korea (custom: 요청은 en으로 하고, weather.description 만 재정의)
 }
 
 /**

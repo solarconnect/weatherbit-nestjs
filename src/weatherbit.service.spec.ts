@@ -2,6 +2,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { WeatherbitModule } from './weatherbit.module';
 import { WeatherbitService } from './weatherbit.service';
+import { WeatherbitLanguage } from './weatherbit.interface';
 
 describe('WeatherbitService', () => {
   let service: WeatherbitService;
@@ -16,6 +17,7 @@ describe('WeatherbitService', () => {
             const apiKey = configService.get<string>('API_KEY');
             return {
               apiKey,
+              lang: WeatherbitLanguage.kr,
             };
           },
         }),
@@ -58,5 +60,4 @@ describe('WeatherbitService', () => {
     const result = await service.forecastDailyByCoordinatesForSC(36, 127);
     console.log(result);
   });
-
 });

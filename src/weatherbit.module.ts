@@ -36,15 +36,12 @@ export interface WeatherbitModuleConfig {
 /**
  * Weatherbit module option
  */
-export interface WeatherbitModuleAsyncConfig
-  extends Pick<ModuleMetadata, 'imports'> {
+export interface WeatherbitModuleAsyncConfig extends Pick<ModuleMetadata, 'imports'> {
   /**
    * Function returning options (or a Promise resolving to options) to configure the Weatherbit module.
    * @param args
    */
-  useFactory?: (
-    ...args: any[]
-  ) => Promise<WeatherbitModuleConfig> | WeatherbitModuleConfig;
+  useFactory?: (...args: any[]) => Promise<WeatherbitModuleConfig> | WeatherbitModuleConfig;
   /**
    * Dependencies that a Factory may inject.
    */
@@ -79,11 +76,7 @@ export class WeatherbitModule {
    *
    * @param options
    */
-  static registerAsync({
-                         useFactory,
-                         imports = [],
-                         inject,
-                       }: WeatherbitModuleAsyncConfig): DynamicModule {
+  static registerAsync({ useFactory, imports = [], inject }: WeatherbitModuleAsyncConfig): DynamicModule {
     return {
       module: WeatherbitModule,
       imports: [HttpModule, ...imports],
