@@ -80,10 +80,10 @@ export class WeatherbitModule {
    * @param options
    */
   static registerAsync({
-    useFactory,
-    imports,
-    inject,
-  }: WeatherbitModuleAsyncConfig): DynamicModule {
+                         useFactory,
+                         imports = [],
+                         inject,
+                       }: WeatherbitModuleAsyncConfig): DynamicModule {
     return {
       module: WeatherbitModule,
       imports: [HttpModule, ...imports],
